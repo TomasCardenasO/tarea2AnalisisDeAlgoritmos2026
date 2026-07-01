@@ -5,57 +5,44 @@
 #include <vector>
 #include <limits>
 
-// ============================================================================
-//  Estructura de un grafo simple representado con matriz de adyacencia.
-//
-//  - adj  : matriz de adyacencia (la que tu entregas o la que se lee del data)
-//  - dist : "matriz de soluciones", una COPIA de la matriz de adyacencia.
-//           Sobre esta copia aplicaras Floyd-Warshall. printDist() la imprime.
-//
-//  Convencion de pesos:
-//  - Si existe arista (i,j) se guarda su peso.
-//  - Si NO existe arista se guarda NO_EDGE (infinito).
-// ============================================================================
+using namespace std;
+
+// Grafo representado con matriz de adyacencia.
+// adj  : matriz original. (matriz de adyacencia)
+// dist : copia de adj sobre la que se aplica Floyd-Warshall. (distancias/soluciones)
+// Convencion: sin arista (i,j) -> NO_EDGE (infinito).
 class Graph {
-public:
-    static const double NO_EDGE;   // centinela "no hay arista" (infinito)
+    public:
+        static const double NO_EDGE;   // centinela "no hay arista"
 
-    int n;              // numero de vertices
-    std::string name;   // nombre del grafo
+        int n;              // numero de vertices
+        string name;        // nombre del grafo
 
-    std::vector<std::vector<double>> adj;   // matriz de adyacencia
-    std::vector<std::vector<double>> dist;  // matriz de soluciones (copia de adj)
+        vector<vector<double>> adj;
+        vector<vector<double>> dist;
 
-    Graph();
-    explicit Graph(int n, const std::string& name = "");
+        Graph();
+        explicit Graph(int n, const string& name = "");
 
+        void setAdjacency(const vector<vector<double>>& matrix);
+        void addEdge(int i, int j, double w);
+        void copyToSolution();   // dist = adj
 
-    void setAdjacency(const std::vector<std::vector<double>>& matrix);
-    void addEdge(int i, int j, double w);
-    void copyToSolution();   // dist = adj
+        // Acceso a la matriz de soluciones
+        vector<vector<double>>& getSolution();
+        const vector<vector<double>>& getSolution() const;
+        vector<vector<double>> getSolutionCopy() const;
+        void setSolution(const vector<vector<double>>& solution);
 
-    // -------- Acceso a la matriz de soluciones --------
-    // Referencia: manipulala directamente afuera (los cambios quedan guardados).
-    std::vector<std::vector<double>>& getSolution();
-    const std::vector<std::vector<double>>& getSolution() const;
+        // limit < 0 -> matriz completa; limit >= 0 -> esquina limit x limit
+        void printGraph(int limit = 12) const;
+        void printDist(int limit = 12) const;
 
-    // Copia: trabajala aparte y devuelvela luego con setSolution().
-    std::vector<std::vector<double>> getSolutionCopy() const;
+        // archivo .mtx -> 1 grafo; carpeta -> 1 grafo por cada .mtx
+        static vector<Graph> setData(const string& path);
 
-    // Recibe de vuelta la matriz manipulada afuera y la almacena
-    void setSolution(const std::vector<std::vector<double>>& solution);
-
-    // -------- Impresion --------
-    // limit < 0 -> matriz COMPLETA; limit >= 0 -> esquina limit x limit (def 12).
-    void printGraph(int limit = 12) const;   // matriz de adyacencia
-    void printDist(int limit = 12) const;    // matriz de soluciones
-
-    // -------- Lectura del dataset --------
-    // archivo .mtx -> 1 grafo; carpeta -> 1 grafo por cada .mtx.
-    static std::vector<Graph> setData(const std::string& path);
-
-private:
-    static Graph readMatrixMarket(const std::string& filePath);
+    private:
+        static Graph readMatrixMarket(const string& filePath);
 };
 
 #endif // GRAPH_H

@@ -4,43 +4,39 @@
 
 using namespace std;
 
-// Constante para representar el infinito (ausencia de camino)
-const int INF = 1e9; 
+const int INF = 1e9; // sin camino conocido
 
-// Estructura para representar una arista dirigida
 struct Edge {
     int src;
     int dest;
     int weight;
 };
 
-// Función que ejecuta el Algoritmo Base (Bellman-Ford iterado n veces)
-// Retorna la matriz de distancias, o una matriz vacía si detecta un ciclo negativo.
+// Algoritmo base (APSP): Bellman-Ford ejecutado una vez por cada origen.
+// Retorna matriz vacia si detecta un ciclo de peso negativo.
 vector<vector<int>> algoritmoBaseAPSP(int n, const vector<Edge>& edges) {
-    // Inicializar la matriz de distancias n x n con infinito
     vector<vector<int>> distMatrix(n, vector<int>(n, INF));
 
-    // Iterar sobre cada nodo para usarlo como origen (source)
     for (int i = 0; i < n; ++i) {
         int source = i;
         distMatrix[source][source] = 0;
 
-        // Paso 1 de Bellman-Ford: Relajar todas las aristas (n - 1) veces
+        // Relajar todas las aristas n-1 veces (largo maximo de un camino simple).
         for (int j = 1; j <= n - 1; ++j) {
             for (const auto& edge : edges) {
-                if (distMatrix[source][edge.src] != INF && 
+                if (distMatrix[source][edge.src] != INF &&
                     distMatrix[source][edge.src] + edge.weight < distMatrix[source][edge.dest]) {
                     distMatrix[source][edge.dest] = distMatrix[source][edge.src] + edge.weight;
                 }
             }
         }
 
-        // Paso 2 de Bellman-Ford: Verificar la existencia de ciclos de peso negativo
+        // Si aun se puede relajar, hay un ciclo de peso negativo.
         for (const auto& edge : edges) {
-            if (distMatrix[source][edge.src] != INF && 
+            if (distMatrix[source][edge.src] != INF &&
                 distMatrix[source][edge.src] + edge.weight < distMatrix[source][edge.dest]) {
                 cout << "  [Alerta] Se ha detectado un ciclo de peso negativo." << endl;
-                return {}; // Retorna una matriz vacía para indicar el fallo
+                return {};
             }
         }
     }
@@ -48,13 +44,12 @@ vector<vector<int>> algoritmoBaseAPSP(int n, const vector<Edge>& edges) {
     return distMatrix;
 }
 
-// Función auxiliar para imprimir la matriz de distancias
 void printMatrix(const vector<vector<int>>& matrix, int n) {
     if (matrix.empty()) {
         cout << "  Matriz no disponible debido a un ciclo negativo." << endl;
         return;
     }
-    
+
     for (int i = 0; i < n; ++i) {
         cout << "  Desde nodo " << i << ": ";
         for (int j = 0; j < n; ++j) {
