@@ -1,0 +1,8 @@
+# Binarios compilados
+bin/
+*.exe
+*.o
+
+# Resultados de corridas (se regeneran con el arnes; commitear solo si se
+# quieren versionar los resultados finales del informe)
+results/*.csv

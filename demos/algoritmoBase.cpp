@@ -21,14 +21,19 @@ vector<vector<int>> algoritmoBaseAPSP(int n, const vector<Edge>& edges) {
         int source = i;
         distMatrix[source][source] = 0;
 
-        // Relajar todas las aristas n-1 veces (largo maximo de un camino simple).
+        // Relajar las aristas hasta n-1 veces (largo maximo de un camino simple).
+        // Si una pasada completa no actualiza ninguna distancia, el algoritmo ya
+        // convergio y no hace falta seguir iterando (deteccion anticipada).
         for (int j = 1; j <= n - 1; ++j) {
+            bool huboActualizacion = false;
             for (const auto& edge : edges) {
                 if (distMatrix[source][edge.src] != INF &&
                     distMatrix[source][edge.src] + edge.weight < distMatrix[source][edge.dest]) {
                     distMatrix[source][edge.dest] = distMatrix[source][edge.src] + edge.weight;
+                    huboActualizacion = true;
                 }
             }
+            if (!huboActualizacion) break;
         }
 
         // Si aun se puede relajar, hay un ciclo de peso negativo.

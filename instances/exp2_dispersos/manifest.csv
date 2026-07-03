@@ -1,0 +1,11 @@
+n,m,archivo
+100,400,sparse_n100.mtx
+200,800,sparse_n200.mtx
+300,1200,sparse_n300.mtx
+400,1600,sparse_n400.mtx
+500,2000,sparse_n500.mtx
+600,2400,sparse_n600.mtx
+700,2800,sparse_n700.mtx
+800,3200,sparse_n800.mtx
+900,3600,sparse_n900.mtx
+1000,4000,sparse_n1000.mtx
