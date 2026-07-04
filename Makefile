@@ -14,7 +14,7 @@ SRC_LIB  := src/Graph.cpp src/WarshallLib.cpp src/BaseAPSPLib.cpp src/InstanceIO
 
 RUNS     ?= 32
 
-.PHONY: all generators harness demos instances \
+.PHONY: all generators harness demos instances chebyshev2 verificar \
         run-exp1 run-exp2 run-exp3 run-exp4 run-all clean
 
 all: generators harness demos
@@ -47,6 +47,14 @@ demos: $(BIN)
 	$(CXX) $(CXXFLAGS) -o $(BIN)/demoFloydWarshall demos/main.cpp src/Graph.cpp
 	$(CXX) $(STD) $(OPT) -o $(BIN)/demoAlgoritmoBase demos/algoritmoBase.cpp
 
+# Compara Floyd-Warshall contra el Algoritmo Base sobre una misma instancia
+# real, para verificar que ambas implementaciones coinciden (uso:
+# make verificar ARCHIVO=instances/exp1_densos/dense_n20.mtx).
+ARCHIVO ?= instances/exp1_densos/dense_n20.mtx
+verificar: $(BIN) instances
+	$(CXX) $(CXXFLAGS) -o $(BIN)/verificarCorrectitud harness/verificarCorrectitud.cpp $(SRC_LIB)
+	./$(BIN)/verificarCorrectitud $(ARCHIVO)
+
 # --- Corridas de los 4 experimentos (RUNS >= 32 segun enunciado) ---
 run-exp1: harness instances
 	mkdir -p $(RESULTS)
@@ -65,6 +73,12 @@ run-exp4: harness instances
 	./$(BIN)/arnesExperimentos $(INSTANCES)/exp4_topologia/manifest.csv $(RUNS) $(RESULTS)/resultados_exp4.csv
 
 run-all: run-exp1 run-exp2 run-exp3 run-exp4
+
+# --- Floyd-Warshall sobre el dataset real Chebyshev2 ---
+chebyshev2: $(BIN)
+	$(CXX) $(CXXFLAGS) -o $(BIN)/correrChebyshev2 real_datasets/correrChebyshev2.cpp src/Graph.cpp src/WarshallLib.cpp
+	mkdir -p $(RESULTS)
+	./$(BIN)/correrChebyshev2
 
 clean:
 	rm -rf $(BIN)
